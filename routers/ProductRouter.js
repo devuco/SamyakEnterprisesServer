@@ -100,9 +100,9 @@ router.put("/rate/:id", async (req, res) => {
 router.get("/search/:input", async (req, res) => {
 	const input = req.params.input;
 	try {
-		const products = await Products.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(3);
-		const categories = await Categories.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(3);
-		const companies = await Companies.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(3);
+		const products = await Products.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(4);
+		const categories = await Categories.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(4);
+		const companies = await Companies.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(4);
 		let response = {products, categories, companies};
 		res.json(response);
 	} catch (error) {
