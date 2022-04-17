@@ -19,29 +19,10 @@ const upload = multer({
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
 	try {
-		let products = [];
-		Products.find()
-			.limit(5)
-			.populate("category")
-			.populate("company")
-			.exec(async (err, data) => {
-				if (err) res.status(500).send(err);
-				await Promise.all(
-					data.map((item) => {
-						let rating = item.rating;
-						let obj = {...item._doc};
-						obj.avgRating =
-							(rating.oneStar * 1 + rating.twoStar * 2 + rating.threeStar * 3 + rating.fourStar * 4 + rating.fiveStar * 5) /
-							(rating.oneStar + rating.twoStar + rating.threeStar + rating.fourStar + rating.fiveStar);
-						obj.totalRatings = rating.oneStar + rating.twoStar + rating.threeStar + rating.fourStar + rating.fiveStar;
-						delete obj.rating;
-						products.push(obj);
-					})
-				);
-				res.send({success: true, data: products});
-			});
+		const products = await Products.find({}, "name price _id image discount").limit(5);
+		res.send({success: true, data: products});
 	} catch (errors) {
 		res.send(errors);
 	}
@@ -57,10 +38,19 @@ router.post("/", upload.single("image"), async (req, res) => {
 	}
 });
 
+router.get("/:id", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const product = await Products.findById(id);
+		res.json({success: true, data: product});
+	} catch (error) {
+		res.status(400).send({success: false, message: error.message});
+	}
+});
+
 router.put("/rate/:id", async (req, res) => {
 	try {
 		const obj = await Products.findById(req.params.id);
-		console.log(obj);
 		const rating = req.body.rating;
 		if (rating && rating <= 5 && rating >= 1) {
 			let stars = obj.rating;
@@ -81,7 +71,11 @@ router.put("/rate/:id", async (req, res) => {
 					stars.fiveStar = (stars.fiveStar || 0) + 1;
 					break;
 			}
-			Products.findByIdAndUpdate(req.params.id, {rating: stars})
+
+			let avgRating =
+				(stars.oneStar * 1 + stars.twoStar * 2 + stars.threeStar * 3 + stars.fourStar * 4 + stars.fiveStar * 5) / (stars.oneStar + stars.twoStar + stars.threeStar + stars.fourStar + stars.fiveStar);
+			let totalRatings = stars.oneStar + stars.twoStar + stars.threeStar + stars.fourStar + stars.fiveStar;
+			Products.findByIdAndUpdate(req.params.id, {rating: stars, avgRating, totalRatings})
 				.then((response) => {
 					res.send({message: "Updated Successfully", success: true});
 				})

@@ -30,8 +30,8 @@ app.use("/users", userRouter);
 app.use("/token", tokenRouter);
 app.use(auth);
 app.use("/categories", categoryRouter);
-app.use("/products", productRouter);
 app.use("/company", companyRouter);
+app.use("/products", productRouter);
 
 app.listen(process.env.PORT, () => {
 	console.log("listening");

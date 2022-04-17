@@ -17,6 +17,7 @@ const ProductSchema = new mongoose.Schema({
 	discount: {type: Number, required: false, default: 0},
 	rating: {type: RatingSchema, required: false, default: {}},
 	avgRating: {type: Number, required: false, default: 0},
+	totalRatings: {type: Number, required: false, default: 0},
 	review: {type: String, required: false, default: 0},
 	stock: {type: Number, required: true, default: 0},
 });
