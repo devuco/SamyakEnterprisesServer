@@ -14,10 +14,9 @@ router.post("/", async (req, res) => {
 			const cartId = userCart._id;
 
 			const productIndex = products.findIndex((el) => body.product === el.product.toString());
-			console.log(productIndex);
 			if (productIndex > -1) {
 				let product = products[productIndex];
-				product.quantity = body.quantity;
+				product.quantity = product.quantity + body.quantity;
 				products[productIndex] = product;
 			} else {
 				products.push(body);

@@ -13,13 +13,14 @@ const ProductSchema = new mongoose.Schema({
 	category: {type: mongoose.Schema.Types.ObjectId, ref: "Categories", required: true},
 	description: {type: String, required: true},
 	price: {type: Number, required: true},
+	stock: {type: Number, required: true},
 	company: {type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true},
 	discount: {type: Number, required: false, default: 0},
 	rating: {type: RatingSchema, required: false, default: {}},
 	avgRating: {type: Number, required: false, default: 0},
 	totalRatings: {type: Number, required: false, default: 0},
 	review: {type: String, required: false, default: 0},
-	stock: {type: Number, required: true, default: 0},
+	color: {type: String, required: true},
 });
 
 const model = mongoose.model("Products", ProductSchema);

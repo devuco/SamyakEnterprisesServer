@@ -3,6 +3,8 @@ const multer = require("multer");
 const Products = require("../models/Products");
 const Categories = require("../models/Categories");
 const Companies = require("../models/Company");
+const getImageColors = require("get-image-colors");
+const path = require("path");
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
@@ -21,7 +23,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
 	try {
-		const products = await Products.find({}, "name price _id image discount").limit(5);
+		const products = await Products.find({}, "name price _id image discount color").limit(5);
 		res.send({success: true, data: products});
 	} catch (errors) {
 		res.send(errors);
@@ -30,6 +32,9 @@ router.get("/", async (req, res) => {
 
 router.post("/", upload.single("image"), async (req, res) => {
 	try {
+		const imagePath = path.join(__dirname, "..", "public", "uploads", "images", "products", req.file.filename);
+		const colorsArray = await getImageColors(imagePath, {count: 3});
+		const colors = colorsArray.map((el) => el.hex());
 		const product = new Products({...req.body, ...{image: "products/" + req.file.filename}});
 		const response = await product.save();
 		res.json(response);

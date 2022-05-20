@@ -6,9 +6,10 @@ const verifyUser = async (req, res, next) => {
 		return res.status(400).json({success: false, message: "UserId missing in request"});
 	} else {
 		try {
-			await Users.findById(userId);
+			const id = await Users.findById(userId);
+			if (!id) return res.status(401).send({success: false, message: "Invalid UserId"});
 		} catch (err) {
-			return res.status(401).send({success: false, message: "Invalid UserId"});
+			return res.status(500).send({success: false, message: err.message});
 		}
 		return next();
 	}
