@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
 	const userId = req.headers.userid;
 	try {
 		Cart.findOne({userId})
-			.populate("products.product", "image name price color -_id")
+			.populate("products.product", "image name price color discountedPrice discount")
 			.exec((err, data) => {
 				if (err) {
 					res.status(400).json({success: false, message: err});
