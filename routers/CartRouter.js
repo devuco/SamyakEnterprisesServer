@@ -36,16 +36,40 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
 	const userId = req.headers.userid;
 	try {
-		const cart = Cart.findOne({userId})
-			.populate("products.product", "image name price -_id")
+		Cart.findOne({userId})
+			.populate("products.product", "image name price color -_id")
 			.exec((err, data) => {
-				data.products.map((el) => {
+				if (err) {
+					res.status(400).json({success: false, message: err});
+				}
+				data?.products?.map((el) => {
 					el.total = el.quantity * el.product.price;
 				});
-				res.json({success: true, data});
+				res.json({success: true, data: data ?? []});
 			});
 	} catch (error) {
-		res.json({success: false, message: error.message});
+		res.status(400).json({success: false, message: error.message});
+	}
+});
+
+router.delete("/:id", async (req, res) => {
+	const userId = req.headers.userid;
+	try {
+		const cart = Cart.findOne({userId});
+		if (cart) {
+			cart.updateOne({userId}, {$pull: {products: {_id: req.params.id}}}, (err, response) => {
+				if (response) {
+					console.log(response);
+					res.status(200).json({success: true, message: "updated successfully"});
+				} else {
+					res.status(400).json({success: false, message: err});
+				}
+			});
+		} else {
+			res.status(400).json({success: false, message: "Cart not found with this userID"});
+		}
+	} catch (err) {
+		res.status(400).json({success: false, message: error.message});
 	}
 });
 

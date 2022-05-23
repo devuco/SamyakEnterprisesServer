@@ -23,7 +23,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
 	try {
-		const products = await Products.find({}, "name price _id image discount color").limit(5);
+		const products = await Products.find({}, "name price _id image discount discountedPrice color").limit(5);
 		res.send({success: true, data: products});
 	} catch (errors) {
 		res.send(errors);
@@ -35,7 +35,8 @@ router.post("/", upload.single("image"), async (req, res) => {
 		const imagePath = path.join(__dirname, "..", "public", "uploads", "images", "products", req.file.filename);
 		const colorsArray = await getImageColors(imagePath, {count: 3});
 		const colors = colorsArray.map((el) => el.hex());
-		const product = new Products({...req.body, ...{image: "products/" + req.file.filename}});
+		const discountedPrice = req.body.price - (req.body.price * req.body.discount) / 100;
+		const product = new Products({...req.body, image: "products/" + req.file.filename, discountedPrice});
 		const response = await product.save();
 		res.json(response);
 	} catch (error) {

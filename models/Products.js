@@ -16,6 +16,7 @@ const ProductSchema = new mongoose.Schema({
 	stock: {type: Number, required: true},
 	company: {type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true},
 	discount: {type: Number, required: false, default: 0},
+	discountedPrice: {type: Number, required: false, default: 0},
 	rating: {type: RatingSchema, required: false, default: {}},
 	avgRating: {type: Number, required: false, default: 0},
 	totalRatings: {type: Number, required: false, default: 0},
