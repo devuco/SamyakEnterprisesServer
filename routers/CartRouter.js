@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
 					res.status(400).json({success: false, message: err});
 				}
 				data?.products?.map((el) => {
-					el.total = el.quantity * el.product.price;
+					el.total = el.quantity * el.product.discountedPrice;
 				});
 				res.json({success: true, data: data ?? []});
 			});
@@ -59,7 +59,6 @@ router.delete("/:id", async (req, res) => {
 		if (cart) {
 			cart.updateOne({userId}, {$pull: {products: {_id: req.params.id}}}, (err, response) => {
 				if (response) {
-					console.log(response);
 					res.status(200).json({success: true, message: "updated successfully"});
 				} else {
 					res.status(400).json({success: false, message: err});
