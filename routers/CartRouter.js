@@ -71,9 +71,6 @@ router.get("/", async (req, res) => {
 router.put("/", async (req, res) => {
 	const body = req.body;
 	const userId = req.headers.userid;
-	if (body.quantity === 0) {
-	}
-
 	try {
 		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
@@ -108,7 +105,7 @@ router.delete("/:id", async (req, res) => {
 	try {
 		const cart = Cart.findOne({userId});
 		if (cart) {
-			cart.updateOne({userId}, {$pull: {products: {_id: req.params.id}}}, (err, response) => {
+			cart.updateOne({userId}, {$pull: {products: {product: req.params.id}}}, (err, response) => {
 				if (response) {
 					res.status(200).json({success: true, message: "updated successfully"});
 				} else {
