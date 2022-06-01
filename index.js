@@ -2,11 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const verifyUser = require("./middleware/user");
 const verifyToken = require("./middleware/auth");
-const userRouter = require("./routers/UserRouter");
+const loginRouter = require("./routers/LoginRouter");
 const categoryRouter = require("./routers/CategoryRouter");
 const productRouter = require("./routers/ProductRouter");
 const companyRouter = require("./routers/CompanyRouter");
 const tokenRouter = require("./routers/TokenRouter");
+const userRouter = require("./routers/UserRouter");
 const cartRouter = require("./routers/CartRouter");
 require("dotenv").config({path: "./.env"});
 
@@ -28,13 +29,14 @@ app.use("/products", express.static("public/uploads/images/products"));
 app.use("/categories", express.static("public/uploads/images/categories"));
 app.use("/company", express.static("public/uploads/images/company"));
 app.use(express.json());
-app.use("/users", userRouter);
+app.use("/login", loginRouter);
 app.use("/token", tokenRouter);
 app.use(verifyToken);
 app.use("/categories", categoryRouter);
 app.use("/company", companyRouter);
 app.use("/products", productRouter);
 app.use(verifyUser);
+app.use("/user", userRouter);
 app.use("/cart", cartRouter);
 
 app.listen(process.env.PORT, () => {
