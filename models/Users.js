@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const AddressSchema = new mongoose.Schema({
 	houseNo: {type: String, required: true},
@@ -13,9 +14,9 @@ const UsersSchema = new mongoose.Schema({
 	email: {type: String, required: true, unique: true},
 	password: {type: String, required: true},
 	imageUri: {type: String, required: false, default: ""},
-	address: {type: AddressSchema, required: false, default: null},
+	address: {type: AddressSchema, required: false},
 });
-
+UsersSchema.plugin(uniqueValidator, {message: "Email already exists"});
 const model = mongoose.model("Users", UsersSchema);
 
 module.exports = model;

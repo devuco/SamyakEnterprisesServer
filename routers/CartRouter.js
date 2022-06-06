@@ -20,12 +20,6 @@ router.post("/", async (req, res) => {
 			const productIndex = products.findIndex((el) => body.product === el.product.toString());
 			//check if product is already in cart
 			if (productIndex > -1) {
-				// let product = products[productIndex];
-				// product.quantity = body.quantity;
-				// product.total = body.total;
-				// products[productIndex] = product;
-				// await Cart.findByIdAndUpdate(cartId, {products, netTotal: userCart.netTotal - product.total + body.total});
-				// let object = {_id: product.product, quantity: product.quantity};
 				res.status(400).json({success: false, message: "Product is already in cart"});
 
 				//push product to cart
