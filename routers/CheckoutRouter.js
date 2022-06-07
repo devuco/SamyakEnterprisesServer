@@ -8,12 +8,23 @@ const router = express.Router();
 
 //TODO Validation for address body
 router.put("/address", async (req, res) => {
-	try {
-		const user = await User.findByIdAndUpdate(req.headers.userid, {address: req.body});
-		const address = await user.address;
-		res.json({success: true, data: address});
-	} catch (error) {
-		res.status(400).json({message: error.message, success: false});
+	const body = req.body;
+	if (body) {
+		{
+			if (!body.houseNo || !body.street || !body.city || !body.state || !body.pincode) {
+				res.status(400).json({success: false, message: "Please fill all the fields"});
+			} else {
+				try {
+					const user = await User.findByIdAndUpdate(req.headers.userid, {address: req.body});
+					const address = await user.address;
+					res.json({success: true, data: address});
+				} catch (error) {
+					res.status(400).json({message: error.message, success: false});
+				}
+			}
+		}
+	} else {
+		res.status(400).json({success: false, message: "Address is required"});
 	}
 });
 
@@ -67,6 +78,22 @@ router.post("/order/place", async (req, res) => {
 		await order.save();
 		await Cart.findOneAndDelete({userId});
 		res.json({success: true, message: "Order Placed Successfully"});
+	} catch (error) {
+		res.status(400).json({message: error.message, success: false});
+	}
+});
+
+router.get("/order/:orderId", async (req, res) => {
+	try {
+		const order = Order.findOne({orderId: req.params.orderId, userId: req.headers.userid})
+			.populate("products.product", "image name price color discountedPrice discount")
+			.exec((err, data) => {
+				if (err) {
+					res.status(400).json({success: false, message: err});
+				} else {
+					res.json({success: true, data});
+				}
+			});
 	} catch (error) {
 		res.status(400).json({message: error.message, success: false});
 	}
