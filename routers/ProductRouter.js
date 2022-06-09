@@ -92,7 +92,6 @@ router.put("/rate/:id", async (req, res) => {
 			res.status(400).json({message: "Rating should be between 1-5", success: false});
 		}
 	} catch (error) {
-		console.log(error);
 		res.status(400).json({message: error.message, success: false});
 	}
 });
@@ -106,7 +105,6 @@ router.get("/search/:input", async (req, res) => {
 		let response = {products, categories, companies};
 		res.json(response);
 	} catch (error) {
-		console.log(error);
 		res.status(400).json({message: error.message, success: false});
 	}
 });

@@ -56,7 +56,6 @@ router.post("/order/create", async (req, res) => {
 			.then((response) => {
 				res.json({success: true, data: response});
 			});
-		console.log(order);
 	} catch (error) {
 		res.status(400).json({message: error, success: false});
 	}
