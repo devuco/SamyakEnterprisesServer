@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/products", express.static("public/uploads/images/products"));
 app.use("/categories", express.static("public/uploads/images/categories"));
 app.use("/company", express.static("public/uploads/images/company"));
+app.use("/invoice", express.static("invoice"));
 app.use(express.json());
 app.use("/login", loginRouter);
 app.use("/token", tokenRouter);
