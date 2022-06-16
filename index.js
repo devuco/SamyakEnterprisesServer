@@ -23,13 +23,16 @@ connection.on("open", () => {
 	console.log("connected");
 });
 
+app.engine("html", require("ejs").renderFile);
+app.set("view engine", "html");
+
 app.get("/", (req, res) => {
 	res.send("Imran Seth");
 });
 app.use("/products", express.static("public/uploads/images/products"));
 app.use("/categories", express.static("public/uploads/images/categories"));
 app.use("/company", express.static("public/uploads/images/company"));
-app.use("/invoice", express.static("invoice"));
+app.use("/invoice", express.static("views"));
 app.use(express.json());
 app.use("/login", loginRouter);
 app.use("/token", tokenRouter);
