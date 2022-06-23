@@ -43,10 +43,10 @@ td { border-color: #DDD; }
 /* page */
 
 html { font: 32px/1 'Open Sans', sans-serif; padding-top: 100px; }
-html { background: #999; cursor: default; }
+html { background: #999; cursor: default;margin-left:30px;margin-right:30px; margin-bottom: 300px;}
 
 body { box-sizing: border-box;  padding: 0.5in; width: 100%; }
-body { background: #FFF; border-radius: 8px; box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5); }
+body { background: #FFF; border-radius: 16px;  }
 
 /* header */
 

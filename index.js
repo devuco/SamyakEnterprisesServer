@@ -10,6 +10,7 @@ const tokenRouter = require("./routers/TokenRouter");
 const userRouter = require("./routers/UserRouter");
 const cartRouter = require("./routers/CartRouter");
 const checkoutRouter = require("./routers/CheckoutRouter");
+const orderRouter = require("./routers/OrderRouter");
 require("dotenv").config({path: "./.env"});
 
 const app = express();
@@ -44,6 +45,7 @@ app.use(verifyUser);
 app.use("/user", userRouter);
 app.use("/cart", cartRouter);
 app.use("/checkout", checkoutRouter);
+app.use("/orders", orderRouter);
 
 app.listen(process.env.PORT, () => {
 	console.log("listening");
