@@ -83,22 +83,6 @@ router.post("/order/place", async (req, res) => {
 	}
 });
 
-router.get("/order/:orderId", async (req, res) => {
-	try {
-		const order = Order.findOne({orderId: req.params.orderId, userId: req.headers.userid})
-			.populate("products.product", "image name price color discountedPrice discount")
-			.exec((err, data) => {
-				if (err) {
-					res.status(400).json({success: false, message: err});
-				} else {
-					res.json({success: true, data});
-				}
-			});
-	} catch (error) {
-		res.status(400).json({message: error.message, success: false});
-	}
-});
-
 router.get("/order/:orderId/invoice", async (req, res) => {
 	try {
 		Order.findOne({orderId: req.params.orderId, userId: req.headers.userid})

@@ -5,9 +5,15 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
 	try {
-		const users = new Users(req.body);
-		await users.save();
-		res.json({success: true, data: users});
+		const email = req.body.email;
+		const user = await Users.findOne({email});
+		if (user) {
+			res.json({success: true, data: user});
+		} else {
+			const users = new Users(req.body);
+			await users.save();
+			res.json({success: true, data: users});
+		}
 	} catch (error) {
 		res.status(400).json({message: error.message, success: false});
 	}
