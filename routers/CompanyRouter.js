@@ -18,12 +18,16 @@ const upload = multer({
 });
 
 router.post("/", upload.single("image"), async (req, res) => {
-	try {
-		const company = new Company({...req.body, ...{image: "company/" + req.file.filename}});
-		const response = await company.save();
-		res.json({sucess: true, data: response});
-	} catch (error) {
-		res.status(400).json({message: error.message, success: false});
+	if (req.isAdmin) {
+		try {
+			const company = new Company({...req.body, ...{image: "company/" + req.file.filename}});
+			const response = await company.save();
+			res.json({sucess: true, data: response});
+		} catch (error) {
+			res.status(400).json({message: error.message, success: false});
+		}
+	} else {
+		res.status(401).json({message: "You are not authorized to perform this action", success: false});
 	}
 });
 

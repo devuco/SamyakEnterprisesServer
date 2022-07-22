@@ -3,20 +3,21 @@ const User = require("../models/Users");
 const Razorpay = require("razorpay");
 const Cart = require("../models/Cart");
 const Order = require("../models/Order");
-var moment = require("moment");
+const moment = require("moment");
 
 const router = express.Router();
 
 //TODO Validation for address body
 router.put("/address", async (req, res) => {
 	const body = req.body;
+	const {userId} = req;
 	if (body) {
 		{
 			if (!body.houseNo || !body.street || !body.city || !body.state || !body.pincode) {
 				res.status(400).json({success: false, message: "Please fill all the fields"});
 			} else {
 				try {
-					const user = await User.findByIdAndUpdate(req.headers.userid, {address: req.body});
+					const user = await User.findByIdAndUpdate(userId, {address: req.body});
 					const address = await user.address;
 					res.json({success: true, data: address});
 				} catch (error) {
@@ -30,8 +31,9 @@ router.put("/address", async (req, res) => {
 });
 
 router.get("/address", async (req, res) => {
+	const {userId} = req;
 	try {
-		const user = await User.findById(req.headers.userid);
+		const user = await User.findById(userId);
 		const address = await user.address;
 		if (address) {
 			res.json({success: true, data: address});
@@ -49,14 +51,11 @@ router.post("/order/create", async (req, res) => {
 	try {
 		var instance = new Razorpay({key_id: "rzp_test_GfxJZDSYJvQ0Gf", key_secret: "3d49EZUzRb1oH1Hli8USYKzF"});
 
-		const order = instance.orders
-			.create({
-				amount: amount * 100,
-				currency: "INR",
-			})
-			.then((response) => {
-				res.json({success: true, data: response});
-			});
+		const order = await instance.orders.create({
+			amount: amount * 100,
+			currency: "INR",
+		});
+		res.json({success: true, data: order});
 	} catch (error) {
 		res.status(400).json({message: error, success: false});
 	}
@@ -64,8 +63,7 @@ router.post("/order/create", async (req, res) => {
 
 router.post("/order/place", async (req, res) => {
 	try {
-		const {body} = req;
-		const userId = req.headers.userid;
+		const {body, userId} = req;
 		const userCart = await Cart.findOne({userId});
 		const products = userCart.products;
 		const order = new Order({
@@ -84,14 +82,15 @@ router.post("/order/place", async (req, res) => {
 });
 
 router.get("/order/:orderId/invoice", async (req, res) => {
+	const {userId} = req;
 	try {
-		Order.findOne({orderId: req.params.orderId, userId: req.headers.userid})
+		Order.findOne({orderId: req.params.orderId, userId})
 			.populate("products.product", "image name price color discountedPrice discount")
 			.exec((err, data) => {
 				if (err) {
 					res.status(400).json({success: false, message: err});
 				} else {
-					User.findById(req.headers.userid, (err, user) => {
+					User.findById(userId, (err, user) => {
 						if (err) {
 							res.status(400).json({success: false, message: err});
 						} else {

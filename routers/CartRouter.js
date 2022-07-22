@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
 	const body = req.body;
-	const userId = req.headers.userid;
+	const {userId} = req;
 	try {
 		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-	const userId = req.headers.userid;
+	const {userId} = req;
 	try {
 		Cart.findOne({userId})
 			.populate("products.product", "image name price color discountedPrice discount")
@@ -64,7 +64,7 @@ router.get("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
 	const body = req.body;
-	const userId = req.headers.userid;
+	const {userId} = req;
 	try {
 		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
@@ -95,7 +95,7 @@ router.put("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-	const userId = req.headers.userid;
+	const {userId} = req;
 	try {
 		const cart = Cart.findOne({userId});
 		if (cart) {

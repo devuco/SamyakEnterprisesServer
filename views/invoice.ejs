@@ -5,7 +5,7 @@
 		<link rel="stylesheet" href="/invoice/style.css" />
 		<link rel="license" href="https://www.opensource.org/licenses/mit-license/" />
 		<script>
-			function myFunction() {
+			const myFunction = () => {
 				var x = document.getElementById("table").getElementsByTagName("tbody")[0];
 				var data =<%-JSON.stringify(data)%>
 				data.products.forEach((obj) => {
@@ -15,10 +15,8 @@
 					row.insertCell().append(obj.quantity);
 					row.insertCell().append(obj.total);
 				});
-			}
-			setTimeout(() => {
-				myFunction();
-			}, 1);
+			};
+			setTimeout(myFunction, 1);
 		</script>
 	</head>
 	<body>

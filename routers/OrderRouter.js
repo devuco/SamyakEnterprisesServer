@@ -2,13 +2,24 @@ const Order = require("../models/Order");
 const router = require("express").Router();
 
 router.get("/", async (req, res) => {
-	const {userid} = req.headers;
-	const orders = await Order.find({userid}, "-products").sort({orderDate: -1});
-	res.json({success: true, data: orders});
+	const {userId} = req;
+	const {page} = req.query;
+	try {
+		const orders = await Order.find({userId})
+			.populate("products.product", "image name price color discountedPrice discount")
+			.sort({orderDate: -1})
+			.skip(page * 5)
+			.limit(5)
+			.exec();
+		res.json({success: true, data: orders});
+	} catch (error) {
+		res.status(400).json({message: error.message, success: false});
+	}
 });
 router.get("/:orderId", async (req, res) => {
+	const {userId} = req;
 	try {
-		const order = Order.findOne({orderId: req.params.orderId, userId: req.headers.userid})
+		Order.findOne({orderId: req.params.orderId, userId})
 			.populate("products.product", "image name price color discountedPrice discount")
 			.exec((err, data) => {
 				if (err) {

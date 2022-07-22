@@ -4,7 +4,9 @@ const Users = require("../models/Users");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-	const users = await Users.find();
+	const {userId} = req;
+	console.log(userId);
+	const users = await Users.findOne({_id: userId});
 	res.send(users);
 });
 

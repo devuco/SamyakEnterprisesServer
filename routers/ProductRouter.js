@@ -31,16 +31,21 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", upload.single("image"), async (req, res) => {
-	try {
-		const imagePath = path.join(__dirname, "..", "public", "uploads", "images", "products", req.file.filename);
-		const colorsArray = await getImageColors(imagePath, {count: 3});
-		const colors = colorsArray.map((el) => el.hex());
-		const discountedPrice = req.body.price - (req.body.price * req.body.discount) / 100;
-		const product = new Products({...req.body, image: "products/" + req.file.filename, discountedPrice});
-		const response = await product.save();
-		res.json(response);
-	} catch (error) {
-		res.status(400).json({message: error.message, success: false});
+	if (req.isAdmin) {
+		try {
+			const imagePath = path.join(__dirname, "..", "public", "uploads", "images", "products", req.file.filename);
+			const colorsArray = await getImageColors(imagePath, {count: 3});
+			const colors = colorsArray.map((el) => el.hex());
+			console.log(colors);
+			const discountedPrice = req.body.price - (req.body.price * req.body.discount) / 100;
+			const product = new Products({...req.body, image: "products/" + req.file.filename, discountedPrice});
+			const response = await product.save();
+			res.json(response);
+		} catch (error) {
+			res.status(400).json({message: error.message, success: false});
+		}
+	} else {
+		res.status(401).json({message: "You are not authorized to perform this action", success: false});
 	}
 });
 

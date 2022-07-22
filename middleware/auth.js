@@ -7,6 +7,11 @@ const verifyToken = (req, res, next) => {
 	} else {
 		try {
 			jwt.verify(token, process.env.TOKEN_KEY);
+			const decoded = jwt.decode(token);
+			req.userId = decoded.userId;
+			if (decoded.isAdmin) {
+				req.isAdmin = decoded.isAdmin;
+			}
 		} catch (error) {
 			return res.status(401).send({message: "Invalid Token", data: error});
 		}
