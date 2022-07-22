@@ -3,6 +3,7 @@ const multer = require("multer");
 const Products = require("../models/Products");
 const Categories = require("../models/Categories");
 const Companies = require("../models/Company");
+const Wishlist = require("../models/Wishlist");
 const getImageColors = require("get-image-colors");
 const path = require("path");
 
@@ -21,10 +22,25 @@ const upload = multer({
 
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
+	const {userId} = req;
 	try {
 		const products = await Products.find({}, "name price _id image discount discountedPrice color").limit(5);
-		res.send({success: true, data: products});
+		const wishlist = await Wishlist.findOne({userId});
+		const newArray = [];
+		if (wishlist) {
+			products.forEach((p) => {
+				const product = p.toObject();
+				const id = wishlist.products.find((item) => item.toString() === product._id.toString());
+				if (id) {
+					product.isSaved = true;
+				} else {
+					product.isSaved = false;
+				}
+				newArray.push(product);
+			});
+		}
+		res.json({success: true, data: newArray});
 	} catch (errors) {
 		res.send(errors);
 	}

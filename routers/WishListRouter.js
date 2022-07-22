@@ -4,7 +4,7 @@ const Products = require("../models/Products");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.put("/", async (req, res) => {
 	const {userId} = req;
 	const {productId} = req.query;
 
@@ -21,21 +21,20 @@ router.post("/", async (req, res) => {
 				//check for wishlist exist in database for that user
 				if (wishlist) {
 					//if wishlist exist then check if pid is already in list
-					const pidExists = await Wishlist.find({"products.product": productId});
+					const pidExists = await Wishlist.find({products: productId});
 					if (pidExists.length > 0) {
 						//if pid is in list then remove it
-						const productDelete = await Wishlist.findOneAndUpdate({userId}, {$pull: {products: {product: productId}}}, {new: true});
+						const productDelete = await Wishlist.findOneAndUpdate({userId}, {$pull: {products: productId}}, {new: true}).populate("products");
 						res.json({success: true, data: productDelete});
 					} else {
 						//if pid is not in list then add it
-						const updatedList = await Wishlist.findOneAndUpdate({userId}, {$push: {products: {product: productId}}}, {new: true});
+						const updatedList = await Wishlist.findOneAndUpdate({userId}, {$push: {products: productId}}, {new: true}).populate("products");
 						res.json({success: true, data: updatedList});
 					}
 				} else {
 					//if wishlist not present then create wishlist for that user and add pid
-					const createWishlist = new Wishlist({userId, products: [{product: productId}]});
-					const createdData = await Wishlist.create({userId, products: [{product: productId}]});
-					const updatedCreatedData = await createdData.populate("products.product");
+					const create = await Wishlist.create({userId, products: productId});
+					const updatedCreatedData = await create.populate("products");
 					res.json({success: true, data: updatedCreatedData});
 				}
 			}
@@ -43,6 +42,16 @@ router.post("/", async (req, res) => {
 	} catch (err) {
 		console.log(err);
 		res.status(400).json({success: false, message: err.response});
+	}
+});
+
+router.get("/", async (req, res) => {
+	const {userId} = req;
+	try {
+		const wishlist = await Wishlist.findOne({userId}).populate("products");
+		res.json({success: true, data: wishlist});
+	} catch (error) {
+		res.status(400).json({success: false, message: error.message});
 	}
 });
 
