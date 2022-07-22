@@ -7,10 +7,10 @@ const getImageColors = require("get-image-colors");
 const path = require("path");
 
 const storage = multer.diskStorage({
-	destination: (req, file, callback) => {
+	destination: (_req, _file, callback) => {
 		callback(null, "./public/uploads/images/products");
 	},
-	filename: (req, file, callback) => {
+	filename: (_req, file, callback) => {
 		callback(null, Date.now() + file.originalname);
 	},
 });
@@ -21,7 +21,7 @@ const upload = multer({
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
 	try {
 		const products = await Products.find({}, "name price _id image discount discountedPrice color").limit(5);
 		res.send({success: true, data: products});
@@ -87,10 +87,10 @@ router.put("/rate/:id", async (req, res) => {
 				(stars.oneStar * 1 + stars.twoStar * 2 + stars.threeStar * 3 + stars.fourStar * 4 + stars.fiveStar * 5) / (stars.oneStar + stars.twoStar + stars.threeStar + stars.fourStar + stars.fiveStar);
 			let totalRatings = stars.oneStar + stars.twoStar + stars.threeStar + stars.fourStar + stars.fiveStar;
 			Products.findByIdAndUpdate(req.params.id, {rating: stars, avgRating, totalRatings})
-				.then((response) => {
+				.then((_response) => {
 					res.send({message: "Updated Successfully", success: true});
 				})
-				.catch((err) => {
+				.catch((_err) => {
 					res.status(400).json({message: error.message, success: false});
 				});
 		} else {
