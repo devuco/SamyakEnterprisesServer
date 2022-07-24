@@ -39,8 +39,10 @@ router.get("/", async (req, res) => {
 				}
 				newArray.push(product);
 			});
+			res.json({success: true, data: newArray});
+		} else {
+			res.json({success: true, data: products});
 		}
-		res.json({success: true, data: newArray});
 	} catch (errors) {
 		res.send(errors);
 	}

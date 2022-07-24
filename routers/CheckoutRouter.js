@@ -17,7 +17,7 @@ router.put("/address", async (req, res) => {
 				res.status(400).json({success: false, message: "Please fill all the fields"});
 			} else {
 				try {
-					const user = await User.findByIdAndUpdate(userId, {address: req.body});
+					const user = await User.findByIdAndUpdate(userId, {$push: {address: req.body}}, {new: true});
 					const address = await user.address;
 					res.json({success: true, data: address});
 				} catch (error) {

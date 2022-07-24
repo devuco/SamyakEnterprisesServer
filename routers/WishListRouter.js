@@ -7,6 +7,7 @@ const router = express.Router();
 router.put("/", async (req, res) => {
 	const {userId} = req;
 	const {productId} = req.query;
+	console.log(userId, productId);
 
 	try {
 		//check for pid inrequest
@@ -21,7 +22,8 @@ router.put("/", async (req, res) => {
 				//check for wishlist exist in database for that user
 				if (wishlist) {
 					//if wishlist exist then check if pid is already in list
-					const pidExists = await Wishlist.find({products: productId});
+					const pidExists = await Wishlist.find({userId, products: productId});
+					console.log(pidExists);
 					if (pidExists.length > 0) {
 						//if pid is in list then remove it
 						const productDelete = await Wishlist.findOneAndUpdate({userId}, {$pull: {products: productId}}, {new: true}).populate("products");
