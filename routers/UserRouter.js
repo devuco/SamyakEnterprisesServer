@@ -20,4 +20,20 @@ router.get("/", async (req, res) => {
 // 	}
 // });
 
+// router.put("/", async (req, res) => {
+// 	try {
+// 		const users = await Users.find({});
+// 		users.forEach((user) => {
+// 			if (!(user.address instanceof Array)) {
+// 				user.address = [user.address];
+// 			}
+// 		});
+// 		await Users.deleteMany({});
+// 		await Users.insertMany(users);
+// 		res.send("done");
+// 	} catch (error) {
+// 		res.status(400).json({message: error.message, success: false});
+// 	}
+// });
+
 module.exports = router;

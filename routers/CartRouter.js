@@ -5,8 +5,7 @@ const Product = require("../models/Products");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-	const body = req.body;
-	const {userId} = req;
+	const {body, userId} = req;
 	try {
 		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
