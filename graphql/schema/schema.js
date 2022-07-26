@@ -3,7 +3,7 @@ const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList} = require("
 const Cart = require("../../models/Cart");
 const Products = require("../../models/Products");
 const cartType = require("../models/cartQL");
-const ProductType = require("../models/ProductQL");
+const ProductType = require("../models/productQL");
 
 const RootQuery = new GraphQLObjectType({
 	name: "RootQueryType",
