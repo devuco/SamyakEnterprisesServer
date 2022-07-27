@@ -69,9 +69,23 @@ router.post("/", upload.single("image"), async (req, res) => {
 
 router.get("/:id", async (req, res) => {
 	try {
-		const id = req.params.id;
-		const product = await Products.findById(id);
-		res.json({success: true, data: product});
+		const {id} = req.params;
+		const {userId} = req;
+
+		const p = await Products.findById(id);
+		const wishlist = await Wishlist.findOne({userId});
+		if (wishlist) {
+			const product = p.toObject();
+			const id = wishlist.products.find((item) => item.toString() === product._id.toString());
+			if (id) {
+				product.isSaved = true;
+			} else {
+				product.isSaved = false;
+			}
+			res.json({success: true, data: product});
+		} else {
+			res.json({success: true, data: p});
+		}
 	} catch (error) {
 		res.status(400).send({success: false, message: error.message});
 	}
