@@ -84,7 +84,7 @@ router.put("/", async (req, res) => {
 	try {
 		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
-		total = discountedPrice * body.quantity;
+		let total = discountedPrice * body.quantity;
 		const products = userCart.products;
 		const cartId = userCart._id;
 
