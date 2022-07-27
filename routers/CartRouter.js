@@ -84,7 +84,7 @@ router.put("/", async (req, res) => {
 	try {
 		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
-		let total = discountedPrice * body.quantity;
+		let bodyTotal = discountedPrice * body.quantity;
 		const products = userCart.products;
 		const cartId = userCart._id;
 
@@ -93,7 +93,7 @@ router.put("/", async (req, res) => {
 		if (productIndex > -1) {
 			let product = products[productIndex];
 			product.quantity = body.quantity;
-			product.total = total;
+			product.total = bodyTotal;
 			products[productIndex] = product;
 			await Cart.findByIdAndUpdate(cartId, {products});
 			const total = (await Cart.findOne({userId})).products.reduce((acc, el) => acc + el.total, 0);
