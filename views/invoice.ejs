@@ -24,7 +24,7 @@
 			<h1>Invoice</h1>
 			<address contenteditable>
 				<p><%= user.name %></p>
-				<p><%= user.address.houseNo %> <br /><%= user.address.street %><br /><%= user.address.city %><br /><%= user.address.state %><br /><%= user.address.pincode %></p>
+				<p><%= user.address[0].houseNo %> <br /><%= user.address[0].street %><br /><%= user.address[0].city %><br /><%= user.address[0].state %><br /><%= user.address[0].pincode %></p>
 				<p><%= user.email %></p>
 			</address>
 		</header>
