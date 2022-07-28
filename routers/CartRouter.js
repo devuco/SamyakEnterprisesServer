@@ -27,7 +27,6 @@ router.post("/", async (req, res) => {
 				quantity = quantity + 1;
 				total = discountedPrice * quantity;
 				product = {...product, quantity, total};
-				console.log(quantity, total, userCart.netTotal);
 				products[productIndex] = product;
 				const response = await Cart.findByIdAndUpdate(cartId, {products, netTotal: userCart.netTotal - prevTotal + total}, {new: true});
 				res.json({success: false, data: response});
@@ -46,7 +45,6 @@ router.post("/", async (req, res) => {
 				quantity: quantity,
 				total,
 			};
-			console.log(productBody);
 			const cart = new Cart({userId, products: [productBody], netTotal: total});
 			await cart.save();
 			res.json({success: true, message: "Updated SuccessFully"});
@@ -79,29 +77,38 @@ router.get("/", async (req, res) => {
 });
 
 router.put("/", async (req, res) => {
-	const body = req.body;
+	const {product: productId, action} = req.body;
 	const {userId} = req;
 	try {
-		const discountedPrice = (await Product.findOne({_id: body.product})).discountedPrice;
+		const discountedPrice = (await Product.findOne({_id: productId})).discountedPrice;
 		const userCart = await Cart.findOne({userId});
-		let bodyTotal = discountedPrice * body.quantity;
 		const products = userCart.products;
 		const cartId = userCart._id;
 
-		const productIndex = products.findIndex((el) => body.product === el.product.toString());
+		if (!userCart) {
+			res.status(400).json({success: false, message: "Cart not found"});
+		}
+
+		const productIndex = products.findIndex((el) => productId === el.product.toString());
 		//check if product is already in cart
 		if (productIndex > -1) {
-			let product = products[productIndex];
-			product.quantity = body.quantity;
-			product.total = bodyTotal;
-			products[productIndex] = product;
-			await Cart.findByIdAndUpdate(cartId, {products});
-			const total = (await Cart.findOne({userId})).products.reduce((acc, el) => acc + el.total, 0);
-			await Cart.findByIdAndUpdate(cartId, {netTotal: total});
-			let object = {_id: product.product, quantity: product.quantity, netTotal: total, total: product.total};
-			res.json({success: true, message: "Updated SuccessFully", data: object});
+			let product = products[productIndex].toObject();
+			product.quantity = action === 1 ? product.quantity + 1 : product.quantity - 1;
+			let prevTotal = product.total;
+			product.total = discountedPrice * product.quantity;
+			let netTotal = userCart.netTotal - prevTotal + product.total;
 
-			//push product to cart
+			if (product.quantity === 0) {
+				const data = await Cart.findOneAndUpdate({userId}, {$pull: {products: {product: productId}}, netTotal}, {new: true}).populate(
+					"products.product",
+					"image name price color discountedPrice discount"
+				);
+				res.json({success: true, data});
+			} else {
+				products[productIndex] = product;
+				const data = await Cart.findByIdAndUpdate(cartId, {products, netTotal}, {new: true}).populate("products.product", "image name price color discountedPrice discount");
+				res.json({success: true, data});
+			}
 		} else {
 			res.status(400).json({success: false, message: "Product is not in cart"});
 		}
@@ -115,15 +122,10 @@ router.delete("/:id", async (req, res) => {
 	try {
 		const cart = Cart.findOne({userId});
 		if (cart) {
-			cart.updateOne({userId}, {$pull: {products: {product: req.params.id}}}, (err, response) => {
-				if (response) {
-					res.status(200).json({success: true, message: "updated successfully"});
-				} else {
-					res.status(400).json({success: false, message: err});
-				}
-			});
+			const data = await Cart.findOneAndUpdate({userId}, {$pull: {products: {product: req.params.id}}}, {new: true});
+			res.json({success: true, data});
 		} else {
-			res.status(400).json({success: false, message: "Cart not found with this userID"});
+			res.status(400).json({success: false, message: "Cart not found with this userId"});
 		}
 	} catch (err) {
 		res.status(400).json({success: false, message: error.message});

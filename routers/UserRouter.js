@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
 	const {userId} = req;
-	console.log(userId);
 	const users = await Users.findOne({_id: userId});
 	res.send(users);
 });
