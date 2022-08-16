@@ -20,7 +20,7 @@ const upload = multer({
 router.post("/", upload.single("image"), async (req, res) => {
 	if (req.isAdmin) {
 		try {
-			const company = new Company({...req.body, ...{image: "company/" + req.file.filename}});
+			const company = new Company({...req.body, image: "company/" + req.file.filename});
 			const response = await company.save();
 			res.json({sucess: true, data: response});
 		} catch (error) {
@@ -32,8 +32,18 @@ router.post("/", upload.single("image"), async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
+	const {page} = req.query;
 	try {
-		const companies = await Company.find();
+		let companies = [];
+		if (page) {
+			companies = await Company.find()
+				.sort()
+				.skip(page * 8)
+				.limit(8)
+				.exec();
+		} else {
+			companies = await Company.find();
+		}
 		res.json({sucess: true, data: companies});
 	} catch (error) {
 		res.status(400).send({message: error.message, success: false});

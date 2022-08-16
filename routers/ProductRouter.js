@@ -24,8 +24,19 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
 	const {userId} = req;
+	const {company, category, page} = req.query;
 	try {
-		const products = await Products.find({}, "name price _id image discount discountedPrice color").limit(5);
+		let filter = {};
+		if (company) {
+			filter.company = company;
+		} else if (category) {
+			filter.category = category;
+		}
+		const products = await Products.find(filter, "name price _id image discount discountedPrice color")
+			.sort()
+			.skip(page * 10)
+			.limit(10)
+			.exec();
 		const wishlist = await Wishlist.findOne({userId});
 		const newArray = [];
 		if (wishlist) {
