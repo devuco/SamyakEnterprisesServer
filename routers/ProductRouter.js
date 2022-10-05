@@ -105,7 +105,7 @@ router.get("/:id", async (req, res) => {
 router.put("/rate/:id", async (req, res) => {
 	try {
 		const obj = await Products.findById(req.params.id);
-		const rating = req.body.rating;
+		const {rating} = req.body;
 		if (rating && rating <= 5 && rating >= 1) {
 			let stars = obj.rating;
 			switch (rating) {
@@ -130,10 +130,10 @@ router.put("/rate/:id", async (req, res) => {
 				(stars.oneStar * 1 + stars.twoStar * 2 + stars.threeStar * 3 + stars.fourStar * 4 + stars.fiveStar * 5) / (stars.oneStar + stars.twoStar + stars.threeStar + stars.fourStar + stars.fiveStar);
 			let totalRatings = stars.oneStar + stars.twoStar + stars.threeStar + stars.fourStar + stars.fiveStar;
 			Products.findByIdAndUpdate(req.params.id, {rating: stars, avgRating, totalRatings})
-				.then((_response) => {
+				.then(() => {
 					res.send({message: "Updated Successfully", success: true});
 				})
-				.catch((_err) => {
+				.catch(() => {
 					res.status(400).json({message: error.message, success: false});
 				});
 		} else {
@@ -145,7 +145,7 @@ router.put("/rate/:id", async (req, res) => {
 });
 
 router.get("/search/:input", async (req, res) => {
-	const input = req.params.input;
+	const {input} = req.params;
 	try {
 		const products = await Products.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(4);
 		const categories = await Categories.find({name: {$regex: input, $options: "i"}}, "name image _id").limit(4);
