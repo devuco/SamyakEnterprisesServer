@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
 				product = {...product, quantity, total};
 				products[productIndex] = product;
 				const response = await Cart.findByIdAndUpdate(cartId, {products, netTotal: userCart.netTotal - prevTotal + total}, {new: true});
-				res.json({success: false, data: response});
+				res.json({success: true, data: response});
 
 				//push product to cart
 			} else {

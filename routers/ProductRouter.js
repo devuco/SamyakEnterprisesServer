@@ -83,7 +83,7 @@ router.get("/:id", async (req, res) => {
 		const {id} = req.params;
 		const {userId} = req;
 
-		const p = await Products.findById(id);
+		const p = await Products.findById(id).populate("category company");
 		const wishlist = await Wishlist.findOne({userId});
 		if (wishlist) {
 			const product = p.toObject();
