@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+var cors = require("cors");
 
 const verifyToken = require("./middleware/auth");
 
@@ -22,6 +23,7 @@ const app = express();
 mongoose.connect(process.env.DATABASE_URL);
 mongoose.connection.on("open", () => console.log("connected"));
 
+app.use(cors());
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
 
