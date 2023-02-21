@@ -15,6 +15,7 @@ const checkoutRouter = require("./routers/CheckoutRouter");
 const orderRouter = require("./routers/OrderRouter");
 const {graphqlHTTP} = require("express-graphql");
 const schema = require("./graphql/schema/schema");
+const tokenRouter = require("./routers/tokenRouter");
 
 require("dotenv").config({path: "./.env"});
 
@@ -36,6 +37,7 @@ app.use("/invoice", express.static("views"));
 app.use(express.json());
 app.use("/login", loginRouter);
 app.use(verifyToken);
+app.use("/token", tokenRouter);
 app.use("/categories", categoryRouter);
 app.use("/company", companyRouter);
 app.use("/products", productRouter);
