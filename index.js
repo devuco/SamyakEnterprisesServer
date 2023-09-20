@@ -30,6 +30,7 @@ app.set("view engine", "html");
 
 app.get("/", (_req, res) => res.send("Imran Seth"));
 app.use("/graphql", graphqlHTTP({schema, graphiql: true}));
+app.use("/.well-known", express.static(".well-known"));
 app.use("/products", express.static("public/uploads/images/products"));
 app.use("/categories", express.static("public/uploads/images/categories"));
 app.use("/company", express.static("public/uploads/images/company"));
